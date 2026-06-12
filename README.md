@@ -1,5 +1,7 @@
 # 📈 Dashboard de mercado cripto
 
+**🔗 Pruébala en vivo: [crypto-dashboard-samuel.streamlit.app](https://crypto-dashboard-samuel.streamlit.app)**
+
 Web interactiva para explorar el precio histórico de criptomonedas con
 indicadores técnicos calculados a mano y métricas clave. Construida con
 Python, datos en vivo de la [API de CoinGecko](https://www.coingecko.com/es/api).
