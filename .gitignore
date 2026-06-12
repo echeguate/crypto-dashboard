@@ -4,6 +4,9 @@ venv/
 # Claves y secretos — NUNCA subir
 .env
 
+# Salidas generadas
+grafico.html
+
 # Caches de Python
 __pycache__/
 *.pyc
