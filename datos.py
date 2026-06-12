@@ -2,6 +2,7 @@
 DataFrame limpio con índice de fechas, medias móviles y rendimientos."""
 
 import os
+import time
 
 import numpy as np
 import pandas as pd
@@ -56,7 +57,32 @@ def calcular_indicadores(df: pd.DataFrame) -> pd.DataFrame:
     # rendimiento logarítmico: ln(precio_hoy / precio_ayer); se suma en el
     # tiempo y es el estándar en finanzas cuantitativas
     df["rendimiento_log"] = np.log(df["precio"] / df["precio"].shift(1))
+
+    df["rsi"] = calcular_rsi(df["precio"])
     return df
+
+
+def calcular_rsi(precios: pd.Series, periodo: int = 14) -> pd.Series:
+    """RSI clásico de Wilder: compara la magnitud media de las subidas
+    frente a las bajadas en los últimos `periodo` días. Oscila entre 0 y 100;
+    por convención >70 se lee como sobrecompra y <30 como sobreventa."""
+    delta = precios.diff()
+    ganancias = delta.clip(lower=0)
+    perdidas = -delta.clip(upper=0)
+    # Wilder usa una media exponencial con alpha = 1/periodo
+    media_ganancia = ganancias.ewm(alpha=1 / periodo, min_periods=periodo).mean()
+    media_perdida = perdidas.ewm(alpha=1 / periodo, min_periods=periodo).mean()
+    rs = media_ganancia / media_perdida
+    return 100 - 100 / (1 + rs)
+
+
+def obtener_comparacion(monedas: list[str], dias: int, divisa: str = "eur") -> pd.DataFrame:
+    """Precios diarios de varias monedas, una columna por moneda."""
+    precios = {}
+    for moneda in monedas:
+        precios[moneda] = obtener_precios(moneda, dias, divisa)["precio"]
+        time.sleep(1)  # pausa entre llamadas para respetar el rate limit
+    return pd.DataFrame(precios).dropna()
 
 
 if __name__ == "__main__":
