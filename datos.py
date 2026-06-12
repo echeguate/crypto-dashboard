@@ -9,14 +9,26 @@ import requests
 from dotenv import load_dotenv
 
 load_dotenv()
-API_KEY = os.getenv("COINGECKO_API_KEY")
+
+
+def _clave_api() -> str | None:
+    """En local la clave vive en .env; en Streamlit Cloud, en st.secrets."""
+    clave = os.getenv("COINGECKO_API_KEY")
+    if clave:
+        return clave
+    try:
+        import streamlit as st
+
+        return st.secrets.get("COINGECKO_API_KEY")
+    except Exception:
+        return None
 
 
 def obtener_precios(moneda: str, dias: int, divisa: str = "eur") -> pd.DataFrame:
     """Llama a market_chart y devuelve un DataFrame diario con columna 'precio'."""
     url = f"https://api.coingecko.com/api/v3/coins/{moneda}/market_chart"
     params = {"vs_currency": divisa, "days": str(dias)}
-    headers = {"x-cg-demo-api-key": API_KEY}
+    headers = {"x-cg-demo-api-key": _clave_api()}
 
     respuesta = requests.get(url, params=params, headers=headers)
     respuesta.raise_for_status()  # lanza error si no es 200, mejor que fallar en silencio
