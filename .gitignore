@@ -1,0 +1,16 @@
+# Entorno virtual
+venv/
+
+# Claves y secretos — NUNCA subir
+.env
+
+# Caches de Python
+__pycache__/
+*.pyc
+
+# Archivos del sistema (macOS)
+.DS_Store
+
+# Configuración de editores
+.vscode/
+.idea/
